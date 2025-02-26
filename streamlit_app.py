@@ -5,7 +5,7 @@ from io import BytesIO
 from PIL import Image
 
 # FastAPI backend URL
-API_URL = "http://localhost:8000/ask_question/"
+API_URL = "https://titanic-app-x3q8.onrender.com/ask_question/"
 
 # Streamlit UI
 st.title("Titanic Dataset Chatbot")
