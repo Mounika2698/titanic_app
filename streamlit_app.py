@@ -1,28 +1,29 @@
 import streamlit as st
 import requests
-from PIL import Image
+import base64
 from io import BytesIO
+from PIL import Image
 
-# FastAPI URL (for the deployed backend)
-API_URL = "http://localhost:8000/query/"
+# FastAPI backend URL
+API_URL = "http://localhost:8000/ask_question/"
 
+# Streamlit UI
 st.title("Titanic Dataset Chatbot")
 
-# Create a simple input for the user to ask questions
+# User input question
 user_question = st.text_input("Ask a question about the Titanic dataset:")
 
 if user_question:
-    response = requests.post(API_URL, json={"question": user_question})
+    # Send the user question to the FastAPI server
+    response = requests.post(API_URL, json={"query": user_question})
+    response_data = response.json()
 
-    if response.status_code == 200:
-        data = response.json()
-        st.write(data['response'])
+    # Display the textual answer
+    st.subheader("Response:")
+    st.write(response_data["answer"])
 
-        # If an image URL is returned (for visualizations), display the image
-        if 'image' in data:
-            img_url = data['image']
-            img = Image.open(img_url)
-            st.image(img, caption="Titanic Dataset Visualization", use_column_width=True)
-
-    else:
-        st.write("Sorry, there was an error processing your query.")
+    # Check if there is an image (base64 encoded)
+    if "image" in response_data:
+        img_data = base64.b64decode(response_data["image"])
+        img = Image.open(BytesIO(img_data))
+        st.image(img, caption="Titanic Dataset Visualization", use_column_width=True)
